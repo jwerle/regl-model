@@ -1,6 +1,6 @@
 {
   "name": "regl-model",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generate a model matrix from position, scale, and rotation vectors. ",
   "main": "src/index.js",
   "scripts": {
