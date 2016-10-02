@@ -14,7 +14,7 @@ $ npm install regl-model --save
 
 See [demo here](https://jwerle.github.io/regl-model/example/)
 
-## Example
+## [Example](http://requirebin.com/?gist=6b1bdf08f01a8cc0fe77ffba0324da18)
 
 ```js
 const quat = require('gl-quat')
