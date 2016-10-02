@@ -15,24 +15,30 @@ const mat4 = require('gl-mat4')
  *
  * @public
  * @param {Function} regl
- * @param {Object} opts
+ * @param {(Object)?} initialState
  * @return {Function}
  */
 
 module.exports = createREGLModel
-function createREGLModel(regl, opts) {
+function createREGLModel(regl, initialState) {
   if ('function' != typeof regl) {
     throw new TypeError("Expecting regl to be a function.")
   }
 
   // global matrix
   const transform = mat4.identity([])
-  opts = opts || {}
+  initialState = initialState || {}
 
   // configurable properties
-  const rotation = opts.rotation || [0, 0, 0, 1]
-  const position = opts.position || [0, 0, 0]
-  const scale = opts.scale || [1, 1, 1]
+  const rotation = initialState.rotation || [0, 0, 0, 1]
+  const position = initialState.position || [0, 0, 0]
+  const scale = initialState.scale || []
+
+  for (let i = 0; i < position.length; ++i) {
+    if (null == scale[i]) {
+      scale[i] = 1
+    }
+  }
 
   // init regl draw command
   const draw = regl({
@@ -46,6 +52,7 @@ function createREGLModel(regl, opts) {
     uniforms: {
       model(ctx, props) {
         const model = []
+        mat4.identity(model)
 
         if ('rotation' in props) {
           rotation[0] = props.rotation[0] || 0
@@ -57,19 +64,18 @@ function createREGLModel(regl, opts) {
         if ('position' in props) {
           position[0] = props.position[0] || 0
           position[1] = props.position[1] || 0
-          position[2] = props.position[2] || 0
+          ;(null != props.position[2]) && (position[2] = props.position[2] || 0)
         }
 
         if ('scale' in props) {
           scale[0] = props.scale[0] || 0
           scale[1] = props.scale[1] || 0
-          scale[2] = props.scale[2] || 0
+          ;(null != props.scale[2]) && (scale[2] = props.scale[2] || 0)
         }
 
-        mat4.identity(model)
-        mat4.translate(model, model, position)
+        ;(3 == position.length) && mat4.translate(model, model, position)
         mat4.multiply(model, model, mat4.fromQuat([], rotation))
-        mat4.scale(model, model, scale)
+        ;(3 == scale.length) && mat4.scale(model, model, scale)
         ;('transform' in props) && mat4.multiply(model, props.transform, model)
         mat4.copy(transform, model)
         return model
