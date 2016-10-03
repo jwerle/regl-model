@@ -51,6 +51,7 @@ function createREGLModel(regl, initialState) {
 
     uniforms: {
       model(ctx, props) {
+        props = props || {}
         const model = []
         mat4.identity(model)
 
